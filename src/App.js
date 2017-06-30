@@ -9,6 +9,7 @@ import {
 
 import Order from './features/Order';
 import * as orderActions from './redux/modules/orders';
+import * as authActions from './redux/modules/auth';
 
 import './App.css';
 
@@ -49,13 +50,12 @@ class App extends Component {
     const ordersRef = firebase.database().ref('orders');
 
     ordersRef.on('value', (snapshot) => {
-      console.log(snapshot.val());
       this.props.loadOrders(snapshot.val());
     });
 
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    firebase.auth().getRedirectResult().then(function (result) {
+    firebase.auth().getRedirectResult().then(result => {
       const user = result.user;
 
       if (!user) {
@@ -63,9 +63,12 @@ class App extends Component {
 
         if (!persistedUser) {
           firebase.auth().signInWithRedirect(provider);
+        } else {
+          this.props.logIn(persistedUser);
         }
       } else {
         localStorage.setItem('user', JSON.stringify(user));
+        this.props.logIn(user);
       }
     }).catch(function (error) {
       console.dir(error);
@@ -94,7 +97,8 @@ class App extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  loadOrders: orders => dispatch(orderActions.load(orders))
+  loadOrders: orders => dispatch(orderActions.load(orders)),
+  logIn: user => dispatch(authActions.logIn(user))
 });
 
 export default connect(null, mapDispatchToProps)(App);

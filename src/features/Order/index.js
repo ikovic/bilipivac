@@ -11,11 +11,13 @@ const Order = ({ orders, user }) => (
     <ul>
       {renderOrders(orders)}
     </ul>
+    <span>{user ? user.displayName : null}</span>
   </div>
 );
 
 const mapStateToProps = state => ({
-  orders: state.orders
+  orders: state.orders,
+  user: state.auth.user
 });
 
 export default connect(mapStateToProps)(Order);
