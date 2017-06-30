@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import {
   BrowserRouter as Router,
@@ -7,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 import Order from './features/Order';
+import * as orderActions from './redux/modules/orders';
 
 import './App.css';
 
@@ -24,6 +26,13 @@ const Adverbs = () => (
 
 
 class App extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      orders: []
+    }
+  }
 
   componentDidMount() {
     const config = {
@@ -37,10 +46,29 @@ class App extends Component {
 
     firebase.initializeApp(config);
 
-    const userRef = firebase.database().ref('users');
+    const ordersRef = firebase.database().ref('orders');
 
-    userRef.on('value', function (snapshot) {
+    ordersRef.on('value', (snapshot) => {
       console.log(snapshot.val());
+      this.props.loadOrders(snapshot.val());
+    });
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth().getRedirectResult().then(function (result) {
+      const user = result.user;
+
+      if (!user) {
+        const persistedUser = JSON.parse(localStorage.getItem('user'));
+
+        if (!persistedUser) {
+          firebase.auth().signInWithRedirect(provider);
+        }
+      } else {
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    }).catch(function (error) {
+      console.dir(error);
     });
   }
 
@@ -65,4 +93,8 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => ({
+  loadOrders: orders => dispatch(orderActions.load(orders))
+});
+
+export default connect(null, mapDispatchToProps)(App);
