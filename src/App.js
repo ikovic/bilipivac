@@ -9,17 +9,11 @@ import {
 
 import Order from './features/Order';
 import Call from './features/Call';
+import Adverbs from './features/Adverbs';
 import * as orderActions from './redux/modules/orders';
 import * as authActions from './redux/modules/auth';
 
 import './App.css';
-
-const Adverbs = () => (
-  <div>
-    <h2>Adverbs</h2>
-  </div>
-);
-
 
 class App extends Component {
 
