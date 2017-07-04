@@ -1,49 +1,49 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import firebase from './firebase';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import firebase from "./firebase";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import AppBar from "material-ui/AppBar";
 
-import Order from './features/Order';
-import Call from './features/Call';
-import Adverbs from './features/Adverbs';
-import * as orderActions from './redux/modules/orders';
-import * as authActions from './redux/modules/auth';
+import Order from "./features/Order";
+import Call from "./features/Call";
+import Adverbs from "./features/Adverbs";
+import * as orderActions from "./redux/modules/orders";
+import * as authActions from "./redux/modules/auth";
 
-import './App.css';
+import "./App.css";
 
 class App extends Component {
-
   componentDidMount() {
-    const ordersRef = firebase.database().ref('orders');
+    const ordersRef = firebase.database().ref("orders");
 
-    ordersRef.on('value', (snapshot) => {
+    ordersRef.on("value", snapshot => {
       this.props.loadOrders(snapshot.val());
     });
 
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    firebase.auth().getRedirectResult().then(result => {
-      const user = result.user;
+    firebase
+      .auth()
+      .getRedirectResult()
+      .then(result => {
+        const user = result.user;
 
-      if (!user) {
-        const persistedUser = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+          const persistedUser = JSON.parse(localStorage.getItem("user"));
 
-        if (!persistedUser) {
-          firebase.auth().signInWithRedirect(provider);
+          if (!persistedUser) {
+            firebase.auth().signInWithRedirect(provider);
+          } else {
+            this.props.logIn(persistedUser);
+          }
         } else {
-          this.props.logIn(persistedUser);
+          localStorage.setItem("user", JSON.stringify(user));
+          this.props.logIn(user);
         }
-      } else {
-        localStorage.setItem('user', JSON.stringify(user));
-        this.props.logIn(user);
-      }
-    }).catch(function (error) {
-      console.dir(error);
-    });
+      })
+      .catch(function(error) {
+        console.dir(error);
+      });
   }
 
   render() {
@@ -51,12 +51,18 @@ class App extends Component {
       <Router>
         <div>
           <ul>
-            <li><Link to="/">Order</Link></li>
-            <li><Link to="/call">Call</Link></li>
-            <li><Link to="/adverbs">Adverbs</Link></li>
+            <li>
+              <Link to="/">Order</Link>
+            </li>
+            <li>
+              <Link to="/call">Call</Link>
+            </li>
+            <li>
+              <Link to="/adverbs">Adverbs</Link>
+            </li>
           </ul>
 
-          <hr />
+          <AppBar title="Bili Pivac" showMenuIconButton={false} />
 
           <Route exact path="/" component={Order} />
           <Route path="/call" component={Call} />
