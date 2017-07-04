@@ -8,16 +8,11 @@ import {
 } from 'react-router-dom';
 
 import Order from './features/Order';
+import Call from './features/Call';
 import * as orderActions from './redux/modules/orders';
 import * as authActions from './redux/modules/auth';
 
 import './App.css';
-
-const Call = () => (
-  <div>
-    <h2>Call</h2>
-  </div>
-);
 
 const Adverbs = () => (
   <div>
@@ -27,13 +22,6 @@ const Adverbs = () => (
 
 
 class App extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      orders: []
-    }
-  }
 
   componentDidMount() {
     const ordersRef = firebase.database().ref('orders');
